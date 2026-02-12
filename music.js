@@ -586,12 +586,18 @@ document.addEventListener('visibilitychange', function() {
         }
       }, {passive: true});
     }
-    // Fade away on any click
+    // First click: dismiss prompt + enable all audio (music + clicks)
     function dismissPrompt() {
       if (prompt) { prompt.classList.add('hidden'); }
       setTimeout(function() { if (prompt && prompt.parentNode) prompt.parentNode.removeChild(prompt); prompt = null; }, 1000);
-      document.removeEventListener('mousedown', dismissPrompt);
-      document.removeEventListener('touchstart', dismissPrompt);
+      // Start music if not already playing
+      if (!on) {
+        ai();
+        if (x.state === 'suspended') x.resume();
+        if (!si) { run(); startNature(); }
+        fi(); on = true;
+        tg.classList.add('playing');
+      }
     }
     document.addEventListener('mousedown', dismissPrompt, {passive: true, once: true});
     document.addEventListener('touchstart', dismissPrompt, {passive: true, once: true});
