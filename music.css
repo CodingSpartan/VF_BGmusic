@@ -1,0 +1,15 @@
+#tvf-sound-toggle{position:fixed;bottom:28px;right:28px;z-index:99999;display:flex;align-items:center;gap:10px;padding:10px 16px 10px 14px;background:rgba(27,29,27,.92);border:1px solid rgba(102,78,51,.35);cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:all .4s cubic-bezier(.25,.46,.45,.94);user-select:none;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+  #tvf-sound-toggle:hover{border-color:rgba(102,78,51,.6);background:rgba(61,53,41,.4)}
+  #tvf-sound-toggle .tvf-bars{display:flex;align-items:flex-end;gap:2.5px;height:16px;width:20px}
+  #tvf-sound-toggle .tvf-bar{width:3px;background:#664E33;border-radius:1px;transition:height .15s ease,opacity .3s ease}
+  #tvf-sound-toggle.playing .tvf-bar{animation:tvf-eq ease-in-out infinite}
+  #tvf-sound-toggle.playing .tvf-bar:nth-child(1){animation-duration:.8s}
+  #tvf-sound-toggle.playing .tvf-bar:nth-child(2){animation-duration:.6s;animation-delay:.1s}
+  #tvf-sound-toggle.playing .tvf-bar:nth-child(3){animation-duration:.7s;animation-delay:.2s}
+  #tvf-sound-toggle.playing .tvf-bar:nth-child(4){animation-duration:.5s;animation-delay:.05s}
+  #tvf-sound-toggle:not(.playing) .tvf-bar{height:3px!important;opacity:.4}
+  #tvf-sound-toggle .tvf-label{font-family:'Spectral',Georgia,serif;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(217,212,201,.5);transition:color .3s;white-space:nowrap}
+  #tvf-sound-toggle:hover .tvf-label{color:rgba(217,212,201,.75)}
+  #tvf-sound-toggle.playing .tvf-label{color:rgba(217,212,201,.6)}
+  @keyframes tvf-eq{0%,100%{height:4px}50%{height:14px}}
+  @media(max-width:600px){#tvf-sound-toggle{bottom:16px;right:16px;padding:8px 12px 8px 10px;gap:8px}#tvf-sound-toggle .tvf-label{font-size:9px;letter-spacing:2px}}
