@@ -499,12 +499,28 @@ function toggle() {
     if (!si) { run(); startNature(); }
     fi(); on = true;
     tg.classList.add('playing');
-    tg.querySelector('.tvf-label').textContent = 'Sound On';
+    
   } else {
+    // Capture current bar heights, freeze them, then transition down
+    var bars = tg.querySelectorAll('.tvf-bar');
+    for (var b = 0; b < bars.length; b++) {
+      var h = bars[b].getBoundingClientRect().height;
+      bars[b].style.height = h + 'px';
+    }
+    tg.classList.remove('playing');
+    tg.classList.add('stopping');
+    // Force reflow so inline heights are applied before transition
+    void tg.offsetHeight;
+    // Now clear inline heights — CSS .stopping will transition to 2.5px
+    for (var b = 0; b < bars.length; b++) {
+      bars[b].style.height = '';
+    }
+    setTimeout(function() {
+      tg.classList.remove('stopping');
+    }, 700);
     fo(function() { stopNature(); x.suspend(); });
     on = false;
-    tg.classList.remove('playing');
-    tg.querySelector('.tvf-label').textContent = 'Sound';
+    
   }
   ck();
 }
@@ -513,7 +529,7 @@ function setup() {
   tg = document.getElementById('tvf-sound-toggle');
   if (!tg) {
     tg = document.createElement('div'); tg.id = 'tvf-sound-toggle'; tg.title = 'Toggle sound';
-    tg.innerHTML = '<div class="tvf-bars"><div class="tvf-bar" style="height:4px"></div><div class="tvf-bar" style="height:8px"></div><div class="tvf-bar" style="height:12px"></div><div class="tvf-bar" style="height:6px"></div></div><span class="tvf-label">Sound</span>';
+    tg.innerHTML = '<div class="tvf-diamond"></div><div class="tvf-bars-wrap"><div class="tvf-bar" style="height:2.5px"></div><div class="tvf-bar" style="height:2.5px"></div><div class="tvf-bar" style="height:2.5px"></div><div class="tvf-bar" style="height:2.5px"></div></div>';
     document.body.appendChild(tg);
   }
   tg.addEventListener('click', toggle);
@@ -533,4 +549,50 @@ function setup() {
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup);
 else setup();
+
+
+// ═══ PAGE LEAVE: quick fade out ═══
+function quickFade() {
+  if (mg && x && on) {
+    var t = x.currentTime;
+    mg.gain.cancelScheduledValues(t);
+    mg.gain.setValueAtTime(mg.gain.value, t);
+    mg.gain.linearRampToValueAtTime(0, t + 0.3);
+  }
+}
+window.addEventListener('beforeunload', quickFade);
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) quickFade();
+  else if (on && mg && x) {
+    if (x.state === 'suspended') x.resume();
+    var t = x.currentTime;
+    mg.gain.cancelScheduledValues(t);
+    mg.gain.setValueAtTime(mg.gain.value, t);
+    mg.gain.linearRampToValueAtTime(0.30, t + 1);
+  }
+});
+
+  // ═══ AUDIO PROMPT: follows cursor, fades on first click ═══
+  var prompt = document.getElementById('tvf-audio-prompt');
+  if (prompt) {
+    var hasFine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (hasFine) {
+      document.addEventListener('mousemove', function(e) {
+        if (prompt && !prompt.classList.contains('hidden')) {
+          prompt.style.left = e.clientX + 'px';
+          prompt.style.top = e.clientY + 'px';
+        }
+      }, {passive: true});
+    }
+    // Fade away on any click
+    function dismissPrompt() {
+      if (prompt) { prompt.classList.add('hidden'); }
+      setTimeout(function() { if (prompt && prompt.parentNode) prompt.parentNode.removeChild(prompt); prompt = null; }, 1000);
+      document.removeEventListener('mousedown', dismissPrompt);
+      document.removeEventListener('touchstart', dismissPrompt);
+    }
+    document.addEventListener('mousedown', dismissPrompt, {passive: true, once: true});
+    document.addEventListener('touchstart', dismissPrompt, {passive: true, once: true});
+  }
+
 })();
