@@ -562,13 +562,15 @@ function quickFade() {
 }
 window.addEventListener('beforeunload', quickFade);
 document.addEventListener('visibilitychange', function() {
-  if (document.hidden) quickFade();
-  else if (on && mg && x) {
+  if (document.hidden) {
+    quickFade();
+    if (x) setTimeout(function() { if (document.hidden && x) x.suspend(); }, 400);
+  } else if (on && mg && x) {
     if (x.state === 'suspended') x.resume();
     var t = x.currentTime;
     mg.gain.cancelScheduledValues(t);
-    mg.gain.setValueAtTime(mg.gain.value, t);
-    mg.gain.linearRampToValueAtTime(0.30, t + 1);
+    mg.gain.setValueAtTime(0, t);
+    mg.gain.linearRampToValueAtTime(0.30, t + 0.5);
   }
 });
 
