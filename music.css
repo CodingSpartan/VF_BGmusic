@@ -1,3 +1,4 @@
+/* Audio prompt (follows cursor on desktop) */
 @media (hover: hover) and (pointer: fine) {
   #tvf-audio-prompt {
     position: fixed;
